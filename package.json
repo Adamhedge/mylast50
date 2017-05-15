@@ -1,0 +1,19 @@
+{
+  "name": "mylast50",
+  "version": "1.0.0",
+  "description": "Makes a playlist of your last 50 songs on spotify",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adamhedge/mylast50.git"
+  },
+  "author": "Adam Hedgpeth",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Adamhedge/mylast50/issues"
+  },
+  "homepage": "https://github.com/Adamhedge/mylast50#readme"
+}
