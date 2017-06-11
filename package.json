@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/Adamhedge/mylast50/issues"
   },
-  "homepage": "https://github.com/Adamhedge/mylast50#readme"
+  "homepage": "https://github.com/Adamhedge/mylast50#readme",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3"
+  }
 }

@@ -1,0 +1,6 @@
+node_modules/
+bower_components/
+server/logs/*.log
+client/lib
+.DS_Store
+temp/*
