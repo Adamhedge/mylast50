@@ -1,6 +1,6 @@
 node_modules/
 bower_components/
 server/logs/*.log
-client/lib
+client/dist
 .DS_Store
 temp/*
