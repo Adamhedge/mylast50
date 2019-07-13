@@ -5,7 +5,6 @@ var browserify = require('browserify');
 var browserifyCSS = require('browserify-css')
 var buffer = require("vinyl-buffer");
 var source = require("vinyl-source-stream");
-var uglify = require("gulp-uglify")
 var watchify = require("watchify");
 
 gulp.task("reactWatch", () => {
@@ -44,3 +43,21 @@ gulp.task('default', () => {
     .pipe(gulp.dest("./client/dist/"))
     ;
 });
+
+function defaultTask(cb) {
+        browserify("client/source/index.js", {
+        debug: true,
+        cache: {},
+        packageCache: {}
+    })
+    .transform(babelify, {presets: ["es2015", "react", "env"]})
+    .transform(browserifyCSS)
+    .bundle()
+    .pipe(source("index.js"))
+    .pipe(buffer())
+    .pipe(gulp.dest("./client/dist/"))
+    ;
+    cb();
+}
+
+exports.default = defaultTask;
