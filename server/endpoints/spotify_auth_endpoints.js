@@ -8,20 +8,18 @@ var request = require('request');
 var redirect_uri = 'http://localhost:3000/callback';
 var stateKey = 'spotify_auth_state';
 
-var getSongs = function(authOptions) {
+
+var get_user = function (auth_options) {
     promise = new Promise(function(resolve, reject) {
-        request.post(authOptions, function(err, res, body) {
+        request.post(auth_options, function(err, res, body) {
 
             if (!err && res.statusCode === 200) {
                 var access_token = body.access_token,
                     refresh_token = body.refresh_token;
 
                 var options = {
-                    url: 'https://api.spotify.com/v1/me/player/recently-played',
+                    url: 'https://api.spotify.com/v1/me/',
                     headers: { 'Authorization': 'Bearer ' + access_token },
-                    params: {
-                        'limit': 50
-                    },
                     json: true
                 };
 
@@ -29,12 +27,60 @@ var getSongs = function(authOptions) {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve(body);
+                        resolve({user: body, access_token: access_token});
                     }
                 });
-
             } else {
-                reject('invalid token')
+                reject('invalid token at refreshing from getSongs')
+            }
+        });
+    });
+    return promise;
+};
+
+var get_songs = function(access_token) {
+    promise = new Promise(function(resolve, reject) {
+        var options = {
+            url: 'https://api.spotify.com/v1/me/player/recently-played',
+            headers: { 'Authorization': 'Bearer ' + access_token },
+            params: {
+                'limit': 50
+            },
+            json: true
+        };
+
+        request.get(options, function(err, res, body) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({songs: body, access_token: access_token});
+            }
+        });
+    });
+    return promise;
+};
+
+var make_playlist = function(access_token, user) {
+    var promise = new Promise(function(resolve, reject) {
+        //var now = Date().toLocaleString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+        var options = {
+            url: 'https://api.spotify.com/v1/users/' + user.id + '/playlists',
+            headers: {
+                'Authorization': 'Bearer ' + access_token,
+                'Content-Type': 'application/json' },
+            body: {
+                'name': "MyLast50: ",// + now,
+                'public': false,
+                'collaborative': false,
+                'description': 'The last 50 songs I listened to.  Try it at mylast50.com'
+            },
+            json: true
+        };
+        request.post(options, function(err, res) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
             }
         });
     });
@@ -43,7 +89,7 @@ var getSongs = function(authOptions) {
 
 module.exports = function(app) {
     app.get('/login', function(req, res) {
-        var state = helpers.generateRandomString(16);
+        var state = helpers.generate_random_string(16);
         res.cookie(stateKey, state);
 
         // Add the ability to read and write playlists.
@@ -69,58 +115,51 @@ module.exports = function(app) {
         // after checking the state parameter
         var code = req.query.code || null;
         var state = req.query.state || null;
+        var stored_state = req.cookies ? req.cookies[stateKey] : null;
 
-        var storedState = req.cookies ? req.cookies[stateKey] : null;
-
-        if (state === null || state !== storedState) {
+        if (state === null || state !== stored_state) {
             res.redirect('/#' + querystring.stringify({
                 error: 'state_mismatch'
             }));
         } else {
             res.clearCookie(stateKey);
-            var authOptions = {
+            var auth_options = {
                 url: 'https://accounts.spotify.com/api/token',
                 form: {
                     code: code,
-                    redirect_uri: redirect_uri,
-                    grant_type: 'authorization_code'
+                    grant_type: 'authorization_code',
+                    redirect_uri: redirect_uri
                 },
                 headers: {
-                    'Authorization': 'Basic ' + (new Buffer(Keys.client_id + ':' + Keys.client_secret).toString('base64'))
+                    'Authorization': 'Basic ' + (Buffer.from(Keys.client_id + ':' + Keys.client_secret).toString('base64'))
                 },
                 json: true
             };
-            getSongs(authOptions).then(function(songs) {
-                res.status(200).send(songs);
 
+            get_user(auth_options).then(function(data) {
+                user = data.user;
+                access_token = data.access_token;
+    
+                get_songs(access_token).then(function(data) {
+        
+                    songs = data.songs;
+        
+        
+
+                    make_playlist(access_token, user).then(function(data) {
+            
+                        res.status(200).send(songs);
+                        // populate_playlist(auth_options, data.playlist, songs, user);
+                    }, function(error) {
+            
+                        res.status(500).send(error);
+                    });
+                }, function(error) {
+                    res.status(500).send(error);
+                });
             }, function(error) {
                 res.status(500).send(error);
-            });
+            }); 
         }
     });
-
-    // app.get('/refresh_token', function(req, res) {
-    //     // requesting access token from refresh token
-    //     var refresh_token = req.query.refresh_token;
-    //     var authOptions = {
-    //         url: 'https://accounts.spotify.com/api/token',
-    //         headers: {
-    //             'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
-    //         },
-    //         form: {
-    //             grant_type: 'refresh_token',
-    //             refresh_token: refresh_token
-    //         },
-    //         json: true
-    //     };
-    //
-    //     request.post(authOptions, function(err, res, body) {
-    //         if (!err && res.statusCode === 200) {
-    //             var access_token = body.access_token;
-    //             res.send({
-    //                 'access_token': access_token
-    //             });
-    //         }
-    //     });
-    // });
 };

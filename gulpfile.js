@@ -3,7 +3,7 @@ var babel = require("gulp-babel");
 var babelify = require("babelify");
 var browserify = require('browserify');
 var browserifyCSS = require('browserify-css')
-var buffer = require("vinyl-buffer");
+var vbuffer = require("vinyl-buffer");
 var source = require("vinyl-source-stream");
 var watchify = require("watchify");
 
@@ -20,7 +20,7 @@ gulp.task("reactWatch", () => {
         console.log("Gulping new react files...")
         return browseredCode.bundle()
             .pipe(source("index.js"))
-            .pipe(buffer())
+            .pipe(vbuffer())
             .pipe(gulp.dest("./client/dist/"));
     };
 
@@ -39,7 +39,7 @@ gulp.task('default', () => {
     .transform(browserifyCSS)
     .bundle()
     .pipe(source("index.js"))
-    .pipe(buffer())
+    .pipe(vbuffer())
     .pipe(gulp.dest("./client/dist/"))
     ;
 });
@@ -54,7 +54,7 @@ function defaultTask(cb) {
     .transform(browserifyCSS)
     .bundle()
     .pipe(source("index.js"))
-    .pipe(buffer())
+    .pipe(vbuffer())
     .pipe(gulp.dest("./client/dist/"))
     ;
     cb();

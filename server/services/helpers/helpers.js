@@ -5,7 +5,7 @@ var _ = require('underscore')
  * @param  {number} length The length of the string
  * @return {string} The generated string
  */
-exports.generateRandomString = function(length) {
+exports.generate_random_string = function(length) {
   var result = '';
   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
