@@ -1,5 +1,6 @@
 var Keys = require('./../services/helpers/keys.js');
 var Promise = require('bluebird');
+var moment = require('moment');
 
 var helpers = require('./../services/helpers/helpers.js');
 var querystring = require('querystring');
@@ -38,22 +39,36 @@ var get_user = function (auth_options) {
     return promise;
 };
 
-var get_songs = function(access_token) {
+var get_songs = function(access_token, songs, before) {
     promise = new Promise(function(resolve, reject) {
         var options = {
             url: 'https://api.spotify.com/v1/me/player/recently-played',
             headers: { 'Authorization': 'Bearer ' + access_token },
             params: {
-                'limit': 50
+                'limit': 20
             },
             json: true
         };
 
+        if (before) {
+            options.url = options.url.concat("?before=" + before);
+        };
+
         request.get(options, function(err, res, body) {
-            if (err) {
-                reject(err);
+            if (!err && res.statusCode === 200) {
+                var result = songs ? songs.concat(body.items) : body.items;
+                var before = (((body || {}).cursors || {}).before || false);
+                if (result.length < 51 && before) {
+                    get_songs(access_token, result, before).then(function(data) {
+                        resolve(data.length > 50 ? data.slice(49) : data);
+                    }, function(err) {
+                        reject(err);
+                    });
+                } else {
+                    resolve(result.length > 50 ? result.slice(0, 50) : result);
+                }
             } else {
-                resolve({songs: body, access_token: access_token});
+                reject(err);
             }
         });
     });
@@ -62,17 +77,43 @@ var get_songs = function(access_token) {
 
 var make_playlist = function(access_token, user) {
     var promise = new Promise(function(resolve, reject) {
-        //var now = Date().toLocaleString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+        
         var options = {
             url: 'https://api.spotify.com/v1/users/' + user.id + '/playlists',
             headers: {
                 'Authorization': 'Bearer ' + access_token,
                 'Content-Type': 'application/json' },
             body: {
-                'name': "MyLast50: ",// + now,
+                'name': "MyLast50: " + moment(Date.now()).format('LL'),
                 'public': false,
                 'collaborative': false,
                 'description': 'The last 50 songs I listened to.  Try it at mylast50.com'
+            },
+            json: true
+        };
+        request.post(options, function(err, res) {
+            if (err) {
+                reject(err);
+            } else {
+                playlist_id = (((res || {}).body || {}).id || false);
+                resolve(playlist_id);
+            }
+        });
+    });
+    return promise;
+};
+
+var populate_playlist = function(access_token, playlist_id, songs, user) {
+    var promise = new Promise(function(resolve, reject) {
+        track_list = songs.map(function(song) {return song.track.uri});
+
+        var options = {
+            url: 'https://api.spotify.com/v1/playlists/' + playlist_id + '/tracks',
+            headers: {
+                'Authorization': 'Bearer ' + access_token,
+                'Content-Type': 'application/json' },
+            body: {
+                uris: track_list
             },
             json: true
         };
@@ -139,19 +180,15 @@ module.exports = function(app) {
             get_user(auth_options).then(function(data) {
                 user = data.user;
                 access_token = data.access_token;
-    
                 get_songs(access_token).then(function(data) {
-        
-                    songs = data.songs;
-        
-        
-
+                    songs = data;
                     make_playlist(access_token, user).then(function(data) {
-            
-                        res.status(200).send(songs);
-                        // populate_playlist(auth_options, data.playlist, songs, user);
+                        populate_playlist(access_token, data, songs, user).then(function(){
+                            res.status(200).send("Nice job!");
+                        }, function(error) {
+                            res.status(500).send(error);
+                        });
                     }, function(error) {
-            
                         res.status(500).send(error);
                     });
                 }, function(error) {
