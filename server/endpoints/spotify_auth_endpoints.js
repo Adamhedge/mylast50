@@ -6,7 +6,8 @@ var helpers = require('./../services/helpers/helpers.js');
 var querystring = require('querystring');
 var request = require('request');
 
-var redirect_uri = 'http://localhost:3000/callback';
+//var redirect_uri = 'http://10.68.212.70:3000/';
+var redirect_uri = 'http://localhost:3000/';
 var stateKey = 'spotify_auth_state';
 
 
@@ -23,7 +24,6 @@ var get_user = function (auth_options) {
                     headers: { 'Authorization': 'Bearer ' + access_token },
                     json: true
                 };
-
                 request.get(options, function(err, res, body) {
                     if (err) {
                         reject(err);
@@ -32,7 +32,7 @@ var get_user = function (auth_options) {
                     }
                 });
             } else {
-                reject('invalid token at refreshing from getSongs')
+                reject(err);
             }
         });
     });
@@ -134,19 +134,18 @@ module.exports = function(app) {
         res.cookie(stateKey, state);
 
         // Add the ability to read and write playlists.
-        var scope = 'playlist-read-private playlist-modify-private user-read-email user-read-recently-played';
+        var scope = 'playlist-modify-private user-read-recently-played';
 
-        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+        res.setHeader('Access-Control-Allow-Origin', redirect_uri);
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
         res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
         res.setHeader('Access-Control-Allow-Credentials', true); // If needed
-
         res.redirect('https://accounts.spotify.com/authorize?' + querystring.stringify({
             response_type: 'code',
             client_id: Keys.client_id,
             scope: scope,
-            redirect_uri: redirect_uri,
+            redirect_uri: redirect_uri + 'callback',
             state: state
         }));
     });
@@ -157,7 +156,6 @@ module.exports = function(app) {
         var code = req.query.code || null;
         var state = req.query.state || null;
         var stored_state = req.cookies ? req.cookies[stateKey] : null;
-
         if (state === null || state !== stored_state) {
             res.redirect('/#' + querystring.stringify({
                 error: 'state_mismatch'
@@ -169,22 +167,22 @@ module.exports = function(app) {
                 form: {
                     code: code,
                     grant_type: 'authorization_code',
-                    redirect_uri: redirect_uri
+                    redirect_uri: redirect_uri + 'callback'
                 },
                 headers: {
                     'Authorization': 'Basic ' + (Buffer.from(Keys.client_id + ':' + Keys.client_secret).toString('base64'))
                 },
                 json: true
             };
-
             get_user(auth_options).then(function(data) {
                 user = data.user;
                 access_token = data.access_token;
                 get_songs(access_token).then(function(data) {
                     songs = data;
                     make_playlist(access_token, user).then(function(data) {
+                        var playlist = data;
                         populate_playlist(access_token, data, songs, user).then(function(){
-                            res.status(200).send("Nice job!");
+                            res.redirect("https://open.spotify.com/user/spotify/playlist/" + playlist);
                         }, function(error) {
                             res.status(500).send(error);
                         });
