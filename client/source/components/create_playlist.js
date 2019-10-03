@@ -14,10 +14,11 @@ class CreatePlaylist extends Component {
 
     render () {
         return (
-            <div>
-                <a href="/login" className='button_container'>
+            <div className='fiftyButton'>
+                <p className='instructions'>Tap for your last 50 songs</p>
+                <a href="/login">
                     <button className='button' onClick={this.handleClick}>
-                        Get your last 50
+                        50
                     </button>
                 </a>
             </div>

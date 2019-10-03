@@ -1,12 +1,29 @@
-.button_container {
-  margin-top: 200px;
+a {
+  outline: none;
+}
+
+.fiftyButton {
+  margin: 35% auto;
+  width: 310px;
+}
+
+.instructions {
+  font-family: "Gurmukhi Sangam MN", "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 24px;
+  color: #D6D6D6;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 0.03em;
 }
 
 .button {
-  background-color:green;
+  text-align: center;
+  background-color: #499751;
   border: none;
   color: white;
-  font-size: 16px;
-  height: 40px;
+  font-size: 100px;
+  height: 200px;
   width: 200px;
+  margin: 40px 55px;
+  border-radius: 50%;
 }
