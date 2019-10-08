@@ -1,8 +1,13 @@
 html {
     min-height: 100%;
 }
+
 body {
     background-color:black;
     width: 500px;
     margin: auto;
 }
+
+*:focus {
+    outline: none;
+  }
