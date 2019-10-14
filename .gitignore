@@ -5,3 +5,4 @@ server/services/helpers/keys.js
 client/dist
 .DS_Store
 temp/*
+.eslintrc.json

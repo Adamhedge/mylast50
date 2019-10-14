@@ -1,4 +1,4 @@
-var _ = require('underscore')
+var _ = require('underscore');
 /**
  * Demo code from the spotify API auth guide
  * Generates a random string containing numbers and letters
