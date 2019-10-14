@@ -4,7 +4,8 @@
   "description": "Makes a playlist of your last 50 songs on spotify",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pretest": "eslint --ignore-path .gitignore ."
   },
   "repository": {
     "type": "git",
@@ -42,6 +43,8 @@
     "babelify": "^7.3.0",
     "browserify": "^14.5.0",
     "browserify-css": "^0.15.0",
+    "eslint": "^6.5.1",
+    "eslint-config-strongloop": "^2.1.0",
     "gulp": "^4.0.0",
     "gulp-babel": "^6.1.3",
     "gulp-cli": "^2.0.1",
