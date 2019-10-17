@@ -1,63 +1,44 @@
 var gulp = require('gulp');
-var babel = require("gulp-babel");
-var babelify = require("babelify");
+var babelify = require('babelify');
 var browserify = require('browserify');
-var browserifyCSS = require('browserify-css')
-var vbuffer = require("vinyl-buffer");
-var source = require("vinyl-source-stream");
-var watchify = require("watchify");
+var browserifyCSS = require('browserify-css');
+var eslint = require('gulp-eslint');
+var vbuffer = require('vinyl-buffer');
+var source = require('vinyl-source-stream');
+var watchify = require('watchify');
 
-gulp.task("reactWatch", () => {
-    var browseredCode = browserify("client/source/index.js", {
-            debug: true,
-            cache: {},
-            packageCache: {}
-        })
-        .transform(babelify, {presets: ["es2015", "react", "env"]})
-        .transform(browserifyCSS);
+var browseredCode = browserify('client/source/index.js', {
+  debug: true,
+  cache: {},
+  packageCache: {},
+})
+  .transform(babelify, {presets: ['es2015', 'react', 'env']})
+  .transform(browserifyCSS);
 
-    var bundle = function() {
-        console.log("Gulping new react files...")
-        return browseredCode.bundle()
-            .pipe(source("index.js"))
-            .pipe(vbuffer())
-            .pipe(gulp.dest("./client/dist/"));
-    };
-
-    bundler = watchify(browseredCode);
-    bundler.on('update', bundle);
-    bundle();
-});
-
-gulp.task('default', () => {
-    browserify("client/source/index.js", {
-        debug: true,
-        cache: {},
-        packageCache: {}
-    })
-    .transform(babelify, {presets: ["es2015", "react", "env"]})
-    .transform(browserifyCSS)
-    .bundle()
-    .pipe(source("index.js"))
+function bundle() {
+  console.log('Gulping new react files...');
+  return browseredCode.bundle()
+    .pipe(source('index.js'))
     .pipe(vbuffer())
-    .pipe(gulp.dest("./client/dist/"))
-    ;
-});
-
-function defaultTask(cb) {
-        browserify("client/source/index.js", {
-        debug: true,
-        cache: {},
-        packageCache: {}
-    })
-    .transform(babelify, {presets: ["es2015", "react", "env"]})
-    .transform(browserifyCSS)
-    .bundle()
-    .pipe(source("index.js"))
-    .pipe(vbuffer())
-    .pipe(gulp.dest("./client/dist/"))
-    ;
-    cb();
+    .pipe(gulp.dest('./client/dist/'));
 }
 
-exports.default = defaultTask;
+function linting() {
+  console.log('Running ESLint');
+  return gulp.src(['**/*.js'])
+    .pipe(eslint({
+      configFile: '.eslintrc.json',
+      ignorePath: '.gitignore',
+    }))
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
+}
+
+gulp.task('reactWatch', () => {
+
+  var bundler = watchify(browseredCode);
+  bundler.on('update', bundle);
+  bundle();
+});
+
+exports.default = gulp.series(linting, bundle);

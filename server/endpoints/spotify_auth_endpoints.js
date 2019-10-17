@@ -12,12 +12,11 @@ var stateKey = 'spotify_auth_state';
 
 
 var get_user = function(auth_options) {
-  promise = new Promise(function(resolve, reject) {
+  var promise = new Promise(function(resolve, reject) {
     request.post(auth_options, function(err, res, body) {
 
       if (!err && res.statusCode === 200) {
         var access_token = body.access_token;
-        var refresh_token = body.refresh_token;
 
         var options = {
           url: 'https://api.spotify.com/v1/me/',
@@ -40,7 +39,7 @@ var get_user = function(auth_options) {
 };
 
 var get_songs = function(access_token, songs, before) {
-  promise = new Promise(function(resolve, reject) {
+  var promise = new Promise(function(resolve, reject) {
     var options = {
       url: 'https://api.spotify.com/v1/me/player/recently-played',
       headers: { Authorization: 'Bearer ' + access_token },
@@ -52,7 +51,7 @@ var get_songs = function(access_token, songs, before) {
 
     if (before) {
       options.url = options.url.concat('?before=' + before);
-    };
+    }
 
     request.get(options, function(err, res, body) {
       if (!err && res.statusCode === 200) {
@@ -95,7 +94,7 @@ var make_playlist = function(access_token, user) {
       if (err) {
         reject(err);
       } else {
-        playlist_id = (((res || {}).body || {}).id || false);
+        var playlist_id = (((res || {}).body || {}).id || false);
         resolve(playlist_id);
       }
     });
@@ -105,7 +104,7 @@ var make_playlist = function(access_token, user) {
 
 var populate_playlist = function(access_token, playlist_id, songs, user) {
   var promise = new Promise(function(resolve, reject) {
-    track_list = songs.map(function(song) { return song.track.uri; });
+    var track_list = songs.map(function(song) { return song.track.uri; });
 
     var options = {
       url: 'https://api.spotify.com/v1/playlists/' + playlist_id + '/tracks',
@@ -175,10 +174,10 @@ module.exports = function(app) {
         json: true,
       };
       get_user(auth_options).then(function(data) {
-        user = data.user;
-        access_token = data.access_token;
+        var user = data.user;
+        var access_token = data.access_token;
         get_songs(access_token).then(function(data) {
-          songs = data;
+          var songs = data;
           make_playlist(access_token, user).then(function(data) {
             var playlist = data;
             populate_playlist(access_token, data, songs, user).then(function(){

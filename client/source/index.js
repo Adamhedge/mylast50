@@ -1,19 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import CreatePlaylist from './components/create_playlist.js';
-import './style/index.css'
+import './style/index.css';
 
 function Login() {
-    return (
-        <div>
-            <CreatePlaylist />
-        </div>
-    );
+  return (
+    <div>
+      <CreatePlaylist />
+    </div>
+  );
 }
 
 const loginButton = <Login />;
 
 ReactDOM.render(
-    loginButton,
-    document.getElementById('root')
+  loginButton,
+  document.getElementById('root')
 );
