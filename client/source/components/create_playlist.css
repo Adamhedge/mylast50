@@ -44,7 +44,7 @@ a {
     box-shadow: 0px -12px #316436 inset;
   }
   5% {
-    box-shadow: 0px 12px #316436 inset, 0px -12px black inset;
+    box-shadow: 0px -12px black inset;
     transform: translate(0px, 12px);
   }
   100% {
@@ -58,7 +58,7 @@ a {
     box-shadow: 0px -12px #316436 inset;
   }  
   5% {
-    box-shadow: 0px 12px #316436 inset, 0px -12px black inset;
+    box-shadow: 0px -12px black inset;
     transform: translate(0px, 12px);
   }
 

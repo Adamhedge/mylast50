@@ -17,7 +17,7 @@ class CreatePlaylist extends Component {
       <div className='fiftyButton'>
         <p className='instructions'>Tap for your last 50 songs</p>
         <a href="#">
-          <button className='button' onClick={this.handleClick} onTouchStart>
+          <button className='button' onClick={this.handleClick}>
                         50
           </button>
         </a>
