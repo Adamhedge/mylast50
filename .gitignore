@@ -1,7 +1,7 @@
 node_modules/
 bower_components/
 server/logs/*.log
-server/services/helpers/keys.js
+server/helpers/keys.js
 client/dist
 .DS_Store
 temp/*

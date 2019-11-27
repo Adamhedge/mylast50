@@ -6,6 +6,7 @@ var eslint = require('gulp-eslint');
 var vbuffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
 var watchify = require('watchify');
+const mocha = require('gulp-mocha');
 
 var browseredCode = browserify('client/source/index.js', {
   debug: true,
@@ -34,6 +35,12 @@ function linting() {
     .pipe(eslint.failAfterError());
 }
 
+function testing() {
+  console.log('Running Mocha Tests');
+  return gulp.src('./server/spotify/test_spotify_API_service.js', {read: false})
+    .pipe(mocha());
+}
+
 gulp.task('reactWatch', () => {
 
   var bundler = watchify(browseredCode);
@@ -41,4 +48,4 @@ gulp.task('reactWatch', () => {
   bundle();
 });
 
-exports.default = gulp.series(linting, bundle);
+exports.default = gulp.series(testing, linting, bundle);
