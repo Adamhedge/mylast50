@@ -50,7 +50,7 @@ exports.get_songs = function(access_token, songs, before) {
     request.get(options, function(err, res, body) {
       if (!err && res.statusCode === 200) {
         if (songs.length === 0 && body.items.length === 0) {
-          reject(err);
+          resolve(songs);
         }
         songs = songs.concat(body.items);
         var before = (((body || {}).cursors || {}).before || false);

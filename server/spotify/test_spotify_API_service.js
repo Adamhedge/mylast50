@@ -48,14 +48,12 @@ describe('Spotify API Endpoints', () => {
         .get('/v1/me/player/recently-played')
         .reply(200, {items: []});
       spotify_API_service.get_songs('123', []).then((result) => {
-        expect(false).to.be.true;
+        expect(result.length === 0).to.be.true;
       }).catch((msg) => {
-        expect(true).to.be.true;
+        expect(false).to.be.true;
       }).then(done);
     });
-    before(() => {
 
-    });
     it('works if there are less than 50 songs', (done) => {
       nock('https://api.spotify.com/')
         .get('/v1/me/player/recently-played')
@@ -65,7 +63,7 @@ describe('Spotify API Endpoints', () => {
         .get('/v1/me/player/recently-played?before=true')
         .reply(200, {items: []});
       spotify_API_service.get_songs('123').then((result) => {
-        expect(result.length === 40).to.equal(true);
+        expect(result.length === 40).to.be.true;
       }).catch((msg) => {
         expect(false).to.equal(true);
       }).then(done);
@@ -80,7 +78,7 @@ describe('Spotify API Endpoints', () => {
         .get('/v1/me/player/recently-played?before=true')
         .reply(200, {items: songs1, cursors: {before: true}});
       spotify_API_service.get_songs('123').then((result) => {
-        expect(result.length === 50).to.equal(true);
+        expect(result.length === 50).to.be.true;
       }).catch((msg) => {
         expect(false).to.equal(true);
       }).then(done);
@@ -91,9 +89,9 @@ describe('Spotify API Endpoints', () => {
         .get('/v1/me/player/recently-played')
         .replyWithError({message: "Spotify doesn't exist", code: 500});
       spotify_API_service.get_songs('123').then((result) => {
-        expect(false).to.equal(true);
+        expect(false).to.be.true;
       }).catch((msg) => {
-        expect(true).to.equal(true);
+        expect(true).to.be.true;
       }).then(done);
     });
   });
