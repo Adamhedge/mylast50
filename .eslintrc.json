@@ -1,0 +1,43 @@
+{ 
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "strongloop"
+  ],
+  "rules": {
+    "max-len": [2,  {"code": 120}]
+  },
+  "plugins": [
+    "react"
+  ],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    }
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true,
+    "mocha": true,
+    "jest": true
+  },
+  "settings": {
+    "react": {
+      "createClass": "createReactClass", 
+      "pragma": "React", 
+      "version": "detect",
+      "flowVersion": "0.53"
+    },
+    "propWrapperFunctions": [
+        "forbidExtraProps",
+        {"property": "freeze", "object": "Object"}
+    ],
+    "linkComponents": [
+      "Hyperlink",
+      {"name": "Link", "linkAttribute": "to"}
+    ]
+  }
+}

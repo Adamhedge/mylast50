@@ -1,8 +1,6 @@
 node_modules/
-bower_components/
 server/logs/*.log
 server/helpers/keys.js
 client/dist
 .DS_Store
 temp/*
-.eslintrc.json

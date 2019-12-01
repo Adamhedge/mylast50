@@ -1,10 +1,15 @@
-var Keys = require('./../helpers/keys.js');
 var spotify_API_service = require('./spotify_API_service.js');
 var helpers = require('./../helpers/helpers.js');
 var querystring = require('querystring');
 
-// var redirect_uri = 'http://10.68.212.70:3000/';
-var redirect_uri = 'http://localhost:5050/';
+if (process.env.NODE_ENV !== 'production') {
+  var Keys = require('./../helpers/keys.js');
+}
+
+// var callback_url = 'http://10.68.212.70:3000/';
+var callback_url = process.env.CALLBACK_URL || 'http://localhost:1337/';
+var client_id = process.env.CLIENT_ID || Keys.client_id;
+var client_secret = process.env.CLIENT_SECRET || Keys.client_secret;
 var stateKey = 'spotify_auth_state';
 
 module.exports = function(app) {
@@ -15,16 +20,16 @@ module.exports = function(app) {
     // Add the ability to read and write playlists.
     var scope = 'playlist-modify-private user-read-recently-played';
 
-    res.setHeader('Access-Control-Allow-Origin', redirect_uri);
+    res.setHeader('Access-Control-Allow-Origin', callback_url);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
     res.setHeader('Access-Control-Allow-Credentials', true); // If needed
     res.redirect('https://accounts.spotify.com/authorize?' + querystring.stringify({
       response_type: 'code',
-      client_id: Keys.client_id,
+      client_id: process.env.CLIENT_ID || client_id,
       scope: scope,
-      redirect_uri: redirect_uri + 'callback',
+      redirect_uri: callback_url + 'callback',
       state: state,
     }));
   });
@@ -46,10 +51,10 @@ module.exports = function(app) {
         form: {
           code: code,
           grant_type: 'authorization_code',
-          redirect_uri: redirect_uri + 'callback',
+          redirect_uri: callback_url + 'callback',
         },
         headers: {
-          Authorization: 'Basic ' + (Buffer.from(Keys.client_id + ':' + Keys.client_secret).toString('base64')),
+          Authorization: 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64')),
         },
         json: true,
       };
