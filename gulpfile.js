@@ -57,6 +57,6 @@ gulp.task('reactWatch', () => {
 
 exports.linting = linting;
 exports.jest = jestTest;
-exports.default = gulp.series(mochaTest, linting, bundle);
-exports.dev = gulp.series(linting, mochaTest, jestTest, bundle);
+exports.default = gulp.series(linting, mochaTest, jestTest, bundle);
+exports.prod = gulp.series(mochaTest, bundle);
 

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "pretest": "eslint --ignore-path .gitignore .",
-    "prestart": "gulp",
+    "prestart": "gulp prod",
     "start": "node server/index.js"
   },
   "repository": {
