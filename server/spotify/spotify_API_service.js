@@ -93,14 +93,15 @@ exports.make_playlist = function(access_token, user) {
         reject(err);
       } else {
         var playlist_id = (((res || {}).body || {}).id || false);
-        resolve(playlist_id);
+        var href_URL = ((((res || {}).body || {}).external_urls || {}).spotify || false);
+        resolve({playlist_id: playlist_id, href_URL: href_URL});
       }
     });
   });
   return promise;
 };
 
-exports.populate_playlist = function(access_token, playlist_id, songs, user) {
+exports.populate_playlist = function(access_token, playlist_id, songs) {
   var promise = new Promise(function(resolve, reject) {
     var track_list = songs.map(function(song) { return song.track.uri; });
 
@@ -142,9 +143,10 @@ exports.make_last_50_playlist = function(auth_options) {
         reject('Not enough songs to make a playlist out of.');
       }
     }).then(function(data) {
-      var playlist = data;
-      exports.populate_playlist(access_token, data, songs, user).then(function() {
-        resolve(playlist);
+      var playlist = data.playlist_id;
+      var href_URL = data.href_URL;
+      exports.populate_playlist(access_token, playlist, songs).then(function() {
+        resolve(href_URL);
       }, function(err) {
         reject(err);
       });

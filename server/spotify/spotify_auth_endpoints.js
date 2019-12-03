@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // var callback_url = 'http://10.68.212.70:3000/';
-var callback_url = process.env.CALLBACK_URL || 'http://localhost:1337/';
+var callback_url = process.env.CALLBACK_URL || 'http://localhost:1337';
 var client_id = process.env.CLIENT_ID || Keys.client_id;
 var client_secret = process.env.CLIENT_SECRET || Keys.client_secret;
 var stateKey = 'spotify_auth_state';
@@ -59,8 +59,8 @@ module.exports = function(app) {
         json: true,
       };
       spotify_API_service.make_last_50_playlist(auth_options, res)
-        .then(function(playlist) {
-          res.redirect('https://open.spotify.com/user/spotify/playlist/' + playlist);
+        .then(function(href_URL) {
+          res.redirect(href_URL);
         }, function(error) {
           res.status(500).send(error);
         });
