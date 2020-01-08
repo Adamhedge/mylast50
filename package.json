@@ -2,10 +2,9 @@
   "name": "mylast50",
   "version": "1.0.0",
   "description": "Makes a playlist of your last 50 songs on spotify",
-  "main": "index.js",
+  "main": "server/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "pretest": "eslint --ignore-path .gitignore .",
+    "test": "eslint --ignore-path .gitignore .",
     "prestart": "gulp prod",
     "start": "node server/index.js"
   },

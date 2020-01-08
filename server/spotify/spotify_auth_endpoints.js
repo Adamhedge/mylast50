@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // var callback_url = 'http://10.68.212.70:3000/';
-var callback_url = process.env.CALLBACK_URL || 'http://localhost:1337';
+var callback_url = process.env.CALLBACK_URL || 'http://localhost:1337/';
 var client_id = process.env.CLIENT_ID || Keys.client_id;
 var client_secret = process.env.CLIENT_SECRET || Keys.client_secret;
 var stateKey = 'spotify_auth_state';

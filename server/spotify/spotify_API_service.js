@@ -36,17 +36,13 @@ exports.get_songs = function(access_token, songs, before) {
   songs = songs || [];
   var promise = new Promise(function(resolve, reject) {
     var options = {
-      url: 'https://api.spotify.com/v1/me/player/recently-played',
+      url: 'https://api.spotify.com/v1/me/player/recently-played?limit=50',
       headers: { Authorization: 'Bearer ' + access_token },
-      params: {
-        limit: 20,
-      },
       json: true,
     };
     if (before) {
-      options.url = options.url.concat('?before=' + before);
+      options.url = options.url.concat('&before=' + before);
     }
-
     request.get(options, function(err, res, body) {
       if (!err && res.statusCode === 200) {
         if (songs.length === 0 && body.items.length === 0) {
@@ -55,7 +51,7 @@ exports.get_songs = function(access_token, songs, before) {
         songs = songs.concat(body.items);
         var before = (((body || {}).cursors || {}).before || false);
 
-        if (songs.length < 51 && before) {
+        if (songs.length < 50 && before) {
           exports.get_songs(access_token, songs, before).then(function(data) {
             resolve(data.length > 50 ? data.slice(49) : data);
           }, function(err) {
@@ -70,6 +66,37 @@ exports.get_songs = function(access_token, songs, before) {
     });
   });
   return promise;
+};
+
+exports.sort_by_album_track = function(songs) {
+  var track_sort = function(a, b) {
+    if (a.track.track_number < b.track.track_number) {
+      return -1;
+    } else if (a.track.track_number > b.track.track_number) {
+      return 1;
+    }
+    return 0;
+  };
+  var sorted_songs = [];
+  var previous_album_uri = '';
+  var tracks_of_album = [];
+  for (var i = 0; i < songs.length; i++) {
+    if (songs[i].track.album && songs[i].track.album.uri && songs[i].track.track_number) {
+      if (songs[i].track.album.uri !== previous_album_uri) {
+        sorted_songs = sorted_songs.concat(tracks_of_album.sort(track_sort));
+        tracks_of_album = [songs[i]];
+      } else {
+        tracks_of_album.push(songs[i]);
+      }
+      previous_album_uri = songs[i].track.album.uri;
+    } else {
+      sorted_songs = sorted_songs.concat(tracks_of_album.sort(track_sort));
+      sorted_songs.push(songs[i]);
+      tracks_of_album = [];
+      previous_album_uri = '';
+    }
+  }
+  return sorted_songs.concat(tracks_of_album.sort(track_sort));
 };
 
 exports.make_playlist = function(access_token, user) {
@@ -136,7 +163,7 @@ exports.make_last_50_playlist = function(auth_options) {
       user = data.user;
       return exports.get_songs(access_token);
     }).then(function(data) {
-      songs = data;
+      songs = exports.sort_by_album_track(data);
       if (songs.length > 0) {
         return exports.make_playlist(access_token, user);
       } else {
