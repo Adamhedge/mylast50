@@ -77,16 +77,39 @@ exports.sort_by_album_track = function(songs) {
     }
     return 0;
   };
+
   var sorted_songs = [];
   var previous_album_uri = '';
   var tracks_of_album = [];
+  var descending_tracks = false;
+
   for (var i = 0; i < songs.length; i++) {
     if (songs[i].track.album && songs[i].track.album.uri && songs[i].track.track_number) {
       if (songs[i].track.album.uri !== previous_album_uri) {
         sorted_songs = sorted_songs.concat(tracks_of_album.sort(track_sort));
         tracks_of_album = [songs[i]];
       } else {
-        tracks_of_album.push(songs[i]);
+        if (tracks_of_album.length === 0) {
+          tracks_of_album.push(songs[i]);
+        } else if (tracks_of_album.length === 1) {
+          descending_tracks =
+            (tracks_of_album[tracks_of_album.length - 1].track.track_number - songs[i].track.track_number === 1);
+          tracks_of_album.push(songs[i]);
+        } else if (descending_tracks) {
+          if (tracks_of_album[tracks_of_album.length - 1].track.track_number - songs[i].track.track_number === 1) {
+            tracks_of_album.push(songs[i]);
+          } else {
+            sorted_songs = sorted_songs.concat(tracks_of_album.reverse());
+            tracks_of_album = [songs[i]];
+          }
+        } else {
+          if (tracks_of_album[tracks_of_album.length - 1].track.track_number - songs[i].track.track_number === 1) {
+            sorted_songs = sorted_songs.concat(tracks_of_album.slice(0, tracks_of_album.length - 1).sort(track_sort));
+            tracks_of_album = [tracks_of_album[tracks_of_album.length - 1]].concat(songs[i]);
+          } else {
+            tracks_of_album.push(songs[i]);
+          }
+        }
       }
       previous_album_uri = songs[i].track.album.uri;
     } else {

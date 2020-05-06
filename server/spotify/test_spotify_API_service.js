@@ -26,6 +26,59 @@ const songs1 = [
   {track: {uri: 1}},
 ];
 
+const unsorted_songs_album_non_collation = [
+  {track: {album: {uri: 1}, track_number: 5, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 4, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 3, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 2, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 1, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 1, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 2, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 6, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 4, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 9, uri: 1}},
+];
+
+const sorted_songs_album_non_collation = [
+  {track: {album: {uri: 1}, track_number: 1, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 2, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 3, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 4, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 5, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 1, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 2, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 4, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 6, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 9, uri: 1}},
+];
+
+const unsorted_songs_album_non_collation_2 = [
+  {track: {album: {uri: 1}, track_number: 5, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 4, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 3, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 2, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 1, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 1, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 3, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 2, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 4, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 9, uri: 1}},
+];
+
+const sorted_songs_album_non_collation_2 = [
+  {track: {album: {uri: 1}, track_number: 1, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 2, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 3, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 4, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 5, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 1, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 2, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 3, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 4, uri: 1}},
+  {track: {album: {uri: 1}, track_number: 9, uri: 1}},
+];
+
+
 const unsorted_songs = [
   {track: {album: {uri: 1}, track_number: 5, uri: 1}},
   {track: {album: {uri: 1}, track_number: 4, uri: 1}},
@@ -80,6 +133,14 @@ describe('Spotify API Service', () => {
     it('Properly sorts a list of songs', (done) => {
       var result = spotify_API_service.sort_by_album_track(unsorted_songs);
       expect(result).to.eql(sorted_songs);
+      done();
+    });
+
+    it('Properly orders album tracks, not collating songs', (done) => {
+      var result = spotify_API_service.sort_by_album_track(unsorted_songs_album_non_collation);
+      expect(result).to.eql(sorted_songs_album_non_collation);
+      result = spotify_API_service.sort_by_album_track(unsorted_songs_album_non_collation_2);
+      expect(result).to.eql(sorted_songs_album_non_collation_2);
       done();
     });
   });
