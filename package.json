@@ -33,7 +33,7 @@
     "react-dom": "^17.0.1",
     "react-router": "^4.3.1",
     "request": "^2.88.2",
-    "underscore": "^1.10.2"
+    "underscore": "^1.12.1"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
